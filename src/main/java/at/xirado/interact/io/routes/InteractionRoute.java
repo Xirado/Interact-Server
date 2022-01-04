@@ -53,6 +53,9 @@ public class InteractionRoute implements Handler
         switch(code)
         {
             case 1 -> handlePing(ctx);
+            case 2 -> handleApplicationCommand(ctx);
+            case 3 -> handleComponentInteraction(ctx);
+            case 4 -> handleAutocompleteInteraction(ctx);
             default -> log.debug("Received unhandled interaction type {}", code);
         }
     }
@@ -60,6 +63,21 @@ public class InteractionRoute implements Handler
     public void handlePing(Context ctx)
     {
         ctx.result(DataObject.empty().put("type", 1).toString());
+    }
+
+    public void handleApplicationCommand(Context ctx)
+    {
+
+    }
+
+    public void handleComponentInteraction(Context ctx)
+    {
+
+    }
+
+    public void handleAutocompleteInteraction(Context ctx)
+    {
+
     }
 
     private boolean verify(String body, String signature, String timestamp)
