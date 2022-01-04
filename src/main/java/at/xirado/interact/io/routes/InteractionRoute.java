@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 
 public class InteractionRoute implements Handler
@@ -29,20 +28,17 @@ public class InteractionRoute implements Handler
     @Override
     public void handle(@NotNull Context ctx) throws Exception
     {
-        System.out.println("Received request");
         String signature = ctx.header("X-Signature-Ed25519");
         String timestamp = ctx.header("X-Signature-Timestamp");
         String bodyString = ctx.body();
         if (!verify(bodyString, signature, timestamp))
         {
-            System.out.println("Could not verify");
             DataObject result = DataObject.empty()
                     .put("code", 401)
                     .put("message", "Unauthorized");
             ctx.status(401).result(result.toString());
             return;
         }
-        System.out.println("Verification success!");
         DataObject body = DataObject.fromJson(bodyString);
         if (body.isNull("type"))
         {
@@ -54,7 +50,6 @@ public class InteractionRoute implements Handler
         }
 
         int code = body.getInt("type");
-        System.out.println("Got type "+code);
         switch(code)
         {
             case 1 -> handlePing(ctx);
@@ -64,7 +59,6 @@ public class InteractionRoute implements Handler
 
     public void handlePing(Context ctx)
     {
-        System.out.println("Handling ping!");
         ctx.result(DataObject.empty().put("type", 1).toString());
     }
 
