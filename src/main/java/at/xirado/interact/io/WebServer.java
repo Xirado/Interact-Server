@@ -20,6 +20,5 @@ public class WebServer
         this.port = port;
         app = Javalin.create().start(host, port);
         app.post("/interaction", new InteractionRoute(interact));
-        app.get("/interaction", ctx -> ctx.result("Hello world!"));
     }
 }

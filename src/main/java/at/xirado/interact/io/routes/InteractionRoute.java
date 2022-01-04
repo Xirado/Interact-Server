@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 
 public class InteractionRoute implements Handler
@@ -23,7 +22,7 @@ public class InteractionRoute implements Handler
     public InteractionRoute(Interact interact)
     {
         this.interact = interact;
-        publicKey = new BigInteger(interact.getPublicKey(), 16).toByteArray();
+        publicKey = Util.hexToBytes(interact.getPublicKey());
     }
 
     @Override
