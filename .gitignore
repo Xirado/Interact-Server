@@ -1,0 +1,7 @@
+*.txt
+*.json
+*.properties
+build/
+.gradle/
+lib/
+.idea/
