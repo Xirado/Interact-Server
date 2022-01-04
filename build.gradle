@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id "application"
+    id "maven-publish"
 }
 
 group 'at.xirado'
@@ -9,12 +11,21 @@ repositories {
     mavenCentral()
 }
 
+compileJava.options.encoding = "UTF-8"
+
 dependencies {
     implementation group: 'io.javalin', name: 'javalin', version: '4.2.0'
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.31'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.1'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.1'
+}
 
-
-
+publishing {
+    publications {
+        maven(MavenPublication) {
+            pom {
+                from components.java
+            }
+        }
+    }
 }
