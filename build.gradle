@@ -11,12 +11,8 @@ repositories {
     mavenCentral()
 }
 
+sourceCompatibility = 16
 compileJava.options.encoding = "UTF-8"
-
-compileJava   {
-    sourceCompatibility = '16'
-    targetCompatibility = '16'
-}
 
 dependencies {
     implementation group: 'io.javalin', name: 'javalin', version: '4.2.0'
