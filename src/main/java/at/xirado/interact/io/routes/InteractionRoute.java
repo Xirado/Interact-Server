@@ -23,7 +23,7 @@ public class InteractionRoute implements Handler
     public InteractionRoute(Interact interact)
     {
         this.interact = interact;
-        publicKey = new BigInteger(interact.getPublicKey(), 16).toByteArray();
+        publicKey = Util.hexToBytes(interact.getPublicKey());
     }
 
     @Override
