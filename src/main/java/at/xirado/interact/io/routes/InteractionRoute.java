@@ -67,6 +67,7 @@ public class InteractionRoute implements Handler
 
     public void handlePing(Context ctx)
     {
+        System.out.println("Got Ping!");
         ctx.result(DataObject.empty().put("type", 1).toString());
     }
 
