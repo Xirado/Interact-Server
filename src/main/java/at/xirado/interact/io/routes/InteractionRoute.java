@@ -57,7 +57,7 @@ public class InteractionRoute implements Handler
             ctx.status(400).json(result);
             return;
         }
-        interact.handleEvent(new InteractionCreateEvent(interact, body, ctx));
+        //interact.handleEvent(new InteractionCreateEvent(interact, body, ctx));
         int code = body.getInt("type");
         switch(code)
         {
@@ -77,7 +77,10 @@ public class InteractionRoute implements Handler
 
     public void handleApplicationCommand(Context ctx)
     {
-
+        DataObject result = DataObject.empty()
+                .put("type", 4)
+                .put("data", DataObject.empty().put("content", "Hello there!"));
+        ctx.json(result);
     }
 
     public void handleComponentInteraction(Context ctx)
