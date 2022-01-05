@@ -2,6 +2,7 @@ package at.xirado.interact.io.routes;
 
 import at.xirado.interact.Interact;
 import at.xirado.interact.Util;
+import at.xirado.interact.event.events.InteractionCreateEvent;
 import com.iwebpp.crypto.TweetNaclFast;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -48,7 +49,7 @@ public class InteractionRoute implements Handler
             ctx.status(400).result(result.toString());
             return;
         }
-
+        interact.handleEvent(new InteractionCreateEvent(interact, body, ctx));
         int code = body.getInt("type");
         switch(code)
         {
