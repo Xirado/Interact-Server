@@ -23,15 +23,13 @@ public class InteractionCreateEvent extends Event
 
     private final Interact interact;
     private final InteractionImpl interaction;
-    private final Context context;
     private final CompletableFuture<String> response = new CompletableFuture<>();
 
-    public InteractionCreateEvent(Interact interact, DataObject payload, Context context)
+    public InteractionCreateEvent(Interact interact, DataObject payload)
     {
         super(interact);
         this.interact = interact;
         this.interaction = new InteractionImpl(interact, payload);
-        this.context = context;
         response.orTimeout(3, TimeUnit.SECONDS);
         response.whenComplete((s, err) -> {
             if (err instanceof TimeoutException)
