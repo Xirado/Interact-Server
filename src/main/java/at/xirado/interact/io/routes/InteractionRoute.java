@@ -49,6 +49,8 @@ public class InteractionRoute implements Handler
             ctx.status(400).result(result.toString());
             return;
         }
+        ctx.header("content-type", "application/json")
+                .header("user-agent", "Interact (https://github.com/Xirado/Interact-Server)");
         interact.handleEvent(new InteractionCreateEvent(interact, body, ctx));
         int code = body.getInt("type");
         switch(code)
