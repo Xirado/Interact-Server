@@ -20,6 +20,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.1'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.1'
     jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         from {
             configurations.compileClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
         }
