@@ -4,6 +4,3 @@ before_install:
 
 jdk:
   - openjdk16
-
-install:
-  - ./gradlew clean shadowJar publishToMavenLocal -x jar

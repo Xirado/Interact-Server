@@ -2,12 +2,11 @@ plugins {
     id 'java'
     id "application"
     id "maven-publish"
-    id "com.github.johnrengelman.shadow" version "7.1.1"
 }
 
 group 'at.xirado'
 version '1.0-SNAPSHOT'
-mainClassName = 'at.xirado.interact.Interact'
+
 repositories {
     mavenCentral()
 }
@@ -20,6 +19,11 @@ dependencies {
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.31'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.1'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.1'
+    jar {
+        from {
+            configurations.compileClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+        }
+    }
 }
 
 publishing {
