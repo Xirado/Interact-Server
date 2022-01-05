@@ -34,7 +34,6 @@ public class WebServer
 
     private JavalinConfig getConfig(JavalinConfig config)
     {
-        config.enforceSsl = true;
         config.defaultContentType = "application/json";
         config.jsonMapper(new JsonMapper()
         {
