@@ -2,11 +2,12 @@ plugins {
     id 'java'
     id "application"
     id "maven-publish"
+    id "com.github.johnrengelman.shadow" version "7.1.1"
 }
 
 group 'at.xirado'
 version '1.0-SNAPSHOT'
-
+mainClassName = 'at.xirado.interact.Interact'
 repositories {
     mavenCentral()
 }

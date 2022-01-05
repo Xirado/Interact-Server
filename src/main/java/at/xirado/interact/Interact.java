@@ -2,7 +2,6 @@ package at.xirado.interact;
 
 import at.xirado.interact.event.events.Event;
 import at.xirado.interact.event.EventListener;
-import at.xirado.interact.event.events.ReadyEvent;
 import at.xirado.interact.io.WebServer;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +20,11 @@ public class Interact
     private final WebServer webServer;
     private final List<EventListener> registeredListeners;
     private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+    public static void main(String[] args)
+    {
+        System.out.println("You cannot run this directly!");
+    }
 
     private Interact(String publicKey, String host, int port, List<EventListener> listeners)
     {
