@@ -26,7 +26,7 @@ public class InteractionCreateEvent extends Event
 
     public void reply(DataObject object)
     {
-        if (initialResponse != null)
+        if (initialResponse.isDone())
             throw new IllegalStateException("You already replied to this interaction!");
         initialResponse.complete(object.toString());
     }
