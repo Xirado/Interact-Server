@@ -4,6 +4,7 @@ import at.xirado.interact.Interact;
 import at.xirado.interact.Util;
 import at.xirado.interact.event.events.InteractionCreateEvent;
 import com.iwebpp.crypto.TweetNaclFast;
+import io.javalin.http.ContentType;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -51,6 +52,7 @@ public class InteractionRoute implements Handler
         }
         ctx.header("content-type", "application/json")
                 .header("user-agent", "Interact (https://github.com/Xirado/Interact-Server)");
+        ctx.status(200);
         interact.handleEvent(new InteractionCreateEvent(interact, body, ctx));
         int code = body.getInt("type");
         switch(code)
