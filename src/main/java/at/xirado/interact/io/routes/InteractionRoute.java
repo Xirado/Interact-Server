@@ -38,7 +38,7 @@ public class InteractionRoute implements Handler
             DataObject result = DataObject.empty()
                     .put("code", 401)
                     .put("message", "Unauthorized");
-            ctx.status(401).result(result.toString());
+            ctx.status(401).json(result);
             return;
         }
         DataObject body = DataObject.fromJson(bodyString);
@@ -47,12 +47,9 @@ public class InteractionRoute implements Handler
             DataObject result = DataObject.empty()
                     .put("code", 400)
                     .put("message", "Bad Request");
-            ctx.status(400).result(result.toString());
+            ctx.status(400).json(result);
             return;
         }
-        ctx.header("content-type", "application/json")
-                .header("user-agent", "Interact (https://github.com/Xirado/Interact-Server)");
-        ctx.status(200);
         interact.handleEvent(new InteractionCreateEvent(interact, body, ctx));
         int code = body.getInt("type");
         switch(code)
@@ -68,7 +65,7 @@ public class InteractionRoute implements Handler
     public void handlePing(Context ctx)
     {
         System.out.println("Got Ping!");
-        ctx.result(DataObject.empty().put("type", 1).toString());
+        ctx.json(DataObject.empty().put("type", 1));
     }
 
     public void handleApplicationCommand(Context ctx)
