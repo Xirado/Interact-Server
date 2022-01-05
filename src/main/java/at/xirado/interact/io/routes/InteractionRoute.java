@@ -80,7 +80,7 @@ public class InteractionRoute implements Handler
     {
         InteractionCreateEvent event = new InteractionCreateEvent(interact, payload);
         interact.handleEvent(event);
-        return event.getInitialResponse();
+        return event.getResponse();
     }
 
     public void handleComponentInteraction(Context ctx)

@@ -37,7 +37,7 @@ public class Interact
 
     public void handleEvent(Event event)
     {
-        registeredListeners.forEach(x -> x.onEvent(event));
+        executor.submit(() -> registeredListeners.forEach(x -> x.onEvent(event)));
     }
 
     public ExecutorService getExecutor()
