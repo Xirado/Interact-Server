@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
 
 public class InteractionRoute implements Handler
 {
@@ -62,7 +63,7 @@ public class InteractionRoute implements Handler
         switch(code)
         {
             case 1 -> handlePing(ctx);
-            case 2 -> handleApplicationCommand(ctx);
+            case 2 -> ctx.future(handleApplicationCommand(body));
             case 3 -> handleComponentInteraction(ctx);
             case 4 -> handleAutocompleteInteraction(ctx);
             default -> log.debug("Received unhandled interaction type {}", code);
@@ -71,16 +72,15 @@ public class InteractionRoute implements Handler
 
     public void handlePing(Context ctx)
     {
-        System.out.println("Got Ping!");
+        log.debug("Received PING interaction");
         ctx.json(DataObject.empty().put("type", 1));
     }
 
-    public void handleApplicationCommand(Context ctx)
+    public CompletableFuture<String> handleApplicationCommand(DataObject payload)
     {
-        DataObject result = DataObject.empty()
-                .put("type", 4)
-                .put("data", DataObject.empty().put("content", "Hello there!"));
-        ctx.json(result);
+        InteractionCreateEvent event = new InteractionCreateEvent(interact, payload);
+        interact.handleEvent(event);
+        return event.getInitialResponse();
     }
 
     public void handleComponentInteraction(Context ctx)

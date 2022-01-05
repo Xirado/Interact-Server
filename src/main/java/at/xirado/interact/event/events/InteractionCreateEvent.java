@@ -8,18 +8,32 @@ import io.javalin.http.Context;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
 public class InteractionCreateEvent extends Event
 {
     private final Interact interact;
     private final InteractionImpl interaction;
-    private final Context context;
+    private CompletableFuture<String> initialResponse = new CompletableFuture<>();
 
-    public InteractionCreateEvent(Interact interact, DataObject payload, Context context)
+    public InteractionCreateEvent(Interact interact, DataObject payload)
     {
         super(interact);
         this.interact = interact;
         this.interaction = new InteractionImpl(interact, payload);
-        this.context = context;
+    }
+
+    public void reply(DataObject object)
+    {
+        if (initialResponse != null)
+            throw new IllegalStateException("You already replied to this interaction!");
+        initialResponse.complete(object.toString());
+    }
+
+    public CompletableFuture<String> getInitialResponse()
+    {
+        return initialResponse;
     }
 
     @NotNull
@@ -32,12 +46,6 @@ public class InteractionCreateEvent extends Event
     public InteractionType getInteractionType()
     {
         return interaction.getType();
-    }
-
-    @NotNull
-    public Context getContext()
-    {
-        return context;
     }
 
     @NotNull
