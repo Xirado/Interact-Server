@@ -6,7 +6,6 @@ import at.xirado.interact.io.routes.InteractionRoute;
 import io.javalin.Javalin;
 import io.javalin.core.JavalinConfig;
 import io.javalin.plugin.json.JsonMapper;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import org.jetbrains.annotations.NotNull;
 
 public class WebServer
