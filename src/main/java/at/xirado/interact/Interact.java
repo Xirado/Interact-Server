@@ -5,6 +5,8 @@ import at.xirado.interact.event.EventListener;
 import at.xirado.interact.io.WebServer;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +16,8 @@ import java.util.concurrent.Executors;
 
 public class Interact
 {
+    private static final Logger log = LoggerFactory.getLogger(Interact.class);
+
     private final String publicKey;
     private final String host;
     private final int port;
@@ -33,7 +37,15 @@ public class Interact
 
     public void handleEvent(Event event)
     {
-        executor.submit(() -> registeredListeners.forEach(x -> x.onEvent(event)));
+        executor.submit(() -> registeredListeners.forEach(x -> {
+            try
+            {
+                x.onEvent(event);
+            } catch (Exception exception)
+            {
+                log.error("An uncaught error occurred in an Event-Thread!", exception);
+            }
+        }));
     }
 
     public ExecutorService getExecutor()
