@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public abstract class ListenerAdapter implements EventListener
+public abstract class InteractListenerAdapter implements InteractEventListener
 {
     public void onGenericEvent(@NotNull GenericEvent event) {}
     public void onReady(@NotNull ReadyEvent event) {}
@@ -44,7 +44,7 @@ public abstract class ListenerAdapter implements EventListener
 
         for (Class<?> clazz : ClassWalker.range(event.getClass(), GenericEvent.class))
         {
-            MethodHandle mh = methods.computeIfAbsent(clazz, ListenerAdapter::findMethod);
+            MethodHandle mh = methods.computeIfAbsent(clazz, InteractListenerAdapter::findMethod);
             if (mh == null)
             {
                 unresolved.add(clazz);
@@ -72,7 +72,7 @@ public abstract class ListenerAdapter implements EventListener
         try
         {
             name = "on" + name.substring(0, name.length() - "Event".length());
-            return lookup.findVirtual(ListenerAdapter.class, name, type);
+            return lookup.findVirtual(InteractListenerAdapter.class, name, type);
         } catch (NoSuchMethodException | IllegalAccessException ignored) {}
         return null;
     }

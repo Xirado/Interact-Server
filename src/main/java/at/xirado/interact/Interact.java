@@ -1,8 +1,14 @@
 package at.xirado.interact;
 
 import at.xirado.interact.event.events.Event;
-import at.xirado.interact.event.EventListener;
+import at.xirado.interact.event.InteractEventListener;
+import at.xirado.interact.event.events.ReadyEvent;
 import at.xirado.interact.io.WebServer;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -14,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Interact
+public class Interact implements EventListener
 {
     private static final Logger log = LoggerFactory.getLogger(Interact.class);
 
@@ -22,17 +28,39 @@ public class Interact
     private final String host;
     private final int port;
     private final WebServer webServer;
-    private final List<EventListener> registeredListeners;
+    private final List<InteractEventListener> registeredListeners;
     private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Util.newThreadFactory());
+    private boolean started = false;
+    private JDA jda = null;
 
-    private Interact(String publicKey, String host, int port, List<EventListener> listeners)
+    private Interact(String publicKey, String host, int port, List<InteractEventListener> listeners)
     {
         this.publicKey = publicKey;
         this.host = host;
         this.port = port;
         this.registeredListeners = listeners;
         webServer = new WebServer(this, host, port);
+    }
 
+    @Override
+    public void onEvent(@NotNull GenericEvent event)
+    {
+        if (event instanceof GuildReadyEvent guildReadyEvent)
+        {
+            if (started)
+                return;
+            this.jda = guildReadyEvent.getJDA();
+            webServer.start();
+            handleEvent(new ReadyEvent(this));
+            log.info("Interact is ready!");
+            return;
+        }
+
+        if (event instanceof ShutdownEvent)
+        {
+            executor.shutdown();
+            log.info("Interact shutting down...");
+        }
     }
 
     public void handleEvent(Event event)
@@ -50,13 +78,18 @@ public class Interact
         return publicKey;
     }
 
+    public JDA getJDA()
+    {
+        return jda;
+    }
+
     public static class Builder
     {
         private final String publicKey;
 
         private String host = "0.0.0.0";
         private int port = 8080;
-        private final List<EventListener> registeredListeners = new ArrayList<>();
+        private final List<InteractEventListener> registeredListeners = new ArrayList<>();
 
         private Builder(String publicKey)
         {
@@ -69,7 +102,7 @@ public class Interact
             return this;
         }
 
-        public Builder addEventListeners(EventListener event, EventListener... events)
+        public Builder addEventListeners(InteractEventListener event, InteractEventListener... events)
         {
             Checks.notNull(event, "Event");
             Checks.noneNull(events, "Events");
@@ -98,5 +131,10 @@ public class Interact
         {
             return new Builder(publicKey).setPort(port);
         }
+    }
+
+    public static Logger getLog()
+    {
+        return log;
     }
 }

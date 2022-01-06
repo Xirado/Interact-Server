@@ -17,9 +17,12 @@ public class WebServer
         this.interact = interact;
         this.host = host;
         this.port = port;
+    }
+
+    public void start()
+    {
         ipAddress(host);
         port(port);
         post("/interaction", new InteractionRoute(interact));
-        interact.handleEvent(new ReadyEvent(interact));
     }
 }

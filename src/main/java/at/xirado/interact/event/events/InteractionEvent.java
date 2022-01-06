@@ -1,22 +1,32 @@
 package at.xirado.interact.event.events;
 
 import at.xirado.interact.Interact;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class InteractionEvent extends Event
 {
 
     private final Interact interact;
-    private final DataObject interaction;
+    private final Interaction interaction;
 
     private DataObject response = null;
 
-    public InteractionEvent(Interact interact, DataObject interaction)
+    public InteractionEvent(Interact interact, Interaction interaction)
     {
         super(interact);
         this.interact = interact;
         this.interaction = interaction;
+    }
+
+    @Nullable
+    public Guild getGuild()
+    {
+        return interaction.getGuild();
     }
 
     protected synchronized void respond(DataObject response)
@@ -36,7 +46,7 @@ public class InteractionEvent extends Event
         return response;
     }
 
-    public DataObject getInteraction()
+    public Interaction getInteraction()
     {
         return interaction;
     }
