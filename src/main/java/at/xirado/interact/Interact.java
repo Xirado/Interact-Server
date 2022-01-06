@@ -23,7 +23,7 @@ public class Interact
     private final int port;
     private final WebServer webServer;
     private final List<EventListener> registeredListeners;
-    private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Util.newThreadFactory());
 
     private Interact(String publicKey, String host, int port, List<EventListener> listeners)
     {
@@ -37,15 +37,7 @@ public class Interact
 
     public void handleEvent(Event event)
     {
-        executor.submit(() -> registeredListeners.forEach(x -> {
-            try
-            {
-                x.onEvent(event);
-            } catch (Exception exception)
-            {
-                log.error("An uncaught error occurred in an Event-Thread!", exception);
-            }
-        }));
+        executor.submit(() -> registeredListeners.forEach(x -> x.onEvent(event)));
     }
 
     public ExecutorService getExecutor()
