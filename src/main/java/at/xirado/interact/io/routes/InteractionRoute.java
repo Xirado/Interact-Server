@@ -89,6 +89,7 @@ public class InteractionRoute implements Route
             response.status(408);
             return DataObject.empty().put("code", 408).put("message", "Request timed out").toString();
         }
+        System.out.println("Sending response: "+event.getResponse());
         return event.getResponse().toString();
     }
 
