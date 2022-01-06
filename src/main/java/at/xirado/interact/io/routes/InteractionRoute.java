@@ -77,6 +77,7 @@ public class InteractionRoute implements Route
             default -> event = new GenericInteractionEvent(interact, body);
         }
         interact.handleEvent(event);
+        System.out.println("Waiting...");
         while (!event.hasResult())
         {
             if (System.currentTimeMillis() > startTime + 3000)
@@ -86,6 +87,7 @@ public class InteractionRoute implements Route
 
         if (!event.hasResult())
         {
+            System.out.println("No result! Sending timeout");
             response.status(408);
             return DataObject.empty().put("code", 408).put("message", "Request timed out").toString();
         }
