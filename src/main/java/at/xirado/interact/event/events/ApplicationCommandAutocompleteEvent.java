@@ -16,6 +16,7 @@ public class ApplicationCommandAutocompleteEvent extends InteractionEvent
     public ApplicationCommandAutocompleteEvent(Interact interact, DataObject interaction)
     {
         super(interact, interaction);
+        System.out.println("Creating new autocomplete event!");
     }
 
     public void sendChoices(Collection<Command.Choice> choices)

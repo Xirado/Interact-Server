@@ -61,6 +61,7 @@ public class InteractionRoute implements Route
         if (type == 1)
             return DataObject.empty().put("type", 1).toString(); // Pong
         InteractionEvent event;
+        System.out.println("Received interaction of type "+InteractionType.fromKey(type));
         switch (InteractionType.fromKey(type)) {
             case APPLICATION_COMMAND -> event = new ApplicationCommandEvent(interact, body);
             case MESSAGE_COMPONENT -> {
