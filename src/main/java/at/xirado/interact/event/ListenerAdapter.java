@@ -1,9 +1,6 @@
 package at.xirado.interact.event;
 
-import at.xirado.interact.event.events.Event;
-import at.xirado.interact.event.events.GenericEvent;
-import at.xirado.interact.event.events.InteractionCreateEvent;
-import at.xirado.interact.event.events.ReadyEvent;
+import at.xirado.interact.event.events.*;
 import net.dv8tion.jda.internal.utils.ClassWalker;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +17,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericEvent(@NotNull GenericEvent event) {}
     public void onReady(@NotNull ReadyEvent event) {}
 
-    public void onInteractionCreate(@NotNull InteractionCreateEvent event) {}
+    public void onApplicationCommand(@NotNull ApplicationCommandEvent event) {}
+    public void onButtonClick(@NotNull ButtonClickEvent event) {}
+    public void onGenericComponentInteraction(@NotNull GenericComponentInteractionEvent event) {}
+    public void onGenericInteraction(@NotNull GenericInteractionEvent event) {}
+    public void onSelectionMenu(@NotNull SelectionMenuEvent event) {}
+    public void onApplicationCommandAutocomplete(@NotNull ApplicationCommandAutocompleteEvent event) {}
 
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();

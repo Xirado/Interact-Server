@@ -2,19 +2,19 @@ package at.xirado.interact.io.routes;
 
 import at.xirado.interact.Interact;
 import at.xirado.interact.Util;
-import at.xirado.interact.event.events.InteractionCreateEvent;
+import at.xirado.interact.entities.InteractionType;
+import at.xirado.interact.event.events.*;
 import com.iwebpp.crypto.TweetNaclFast;
-import io.javalin.http.Context;
-import io.javalin.http.Handler;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.Request;
+import spark.Response;
+import spark.Route;
 
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletableFuture;
 
-public class InteractionRoute implements Handler
+public class InteractionRoute implements Route
 {
     private static final Logger log = LoggerFactory.getLogger(Interact.class);
 
@@ -28,69 +28,68 @@ public class InteractionRoute implements Handler
     }
 
     @Override
-    public void handle(@NotNull Context ctx) throws Exception
+    public Object handle(Request request, Response response) throws Exception
     {
-        String signature = ctx.header("X-Signature-Ed25519");
-        String timestamp = ctx.header("X-Signature-Timestamp");
-        if (signature == null || timestamp == null)
+        long startTime = System.currentTimeMillis();
+        String signature = request.headers("X-Signature-Ed25519");
+        String timestamp = request.headers("X-Signature-Timestamp");
+        String bodyString = request.body();
+        response.header("content-type", "application/json");
+
+        if (signature == null || timestamp == null || !verify(bodyString, signature, timestamp))
         {
             DataObject result = DataObject.empty()
                     .put("code", 401)
                     .put("message", "Unauthorized");
-            ctx.status(401).json(result);
-            return;
+            response.status(401);
+            return result.toString();
         }
-        String bodyString = ctx.body();
-        if (!verify(bodyString, signature, timestamp))
-        {
-            DataObject result = DataObject.empty()
-                    .put("code", 401)
-                    .put("message", "Unauthorized");
-            ctx.status(401).json(result);
-            return;
-        }
+
         DataObject body = DataObject.fromJson(bodyString);
+
         if (body.isNull("type"))
         {
             DataObject result = DataObject.empty()
                     .put("code", 400)
                     .put("message", "Bad Request");
-            ctx.status(400).json(result);
-            return;
+            response.status(400);
+            return result.toString();
         }
-        //interact.handleEvent(new InteractionCreateEvent(interact, body, ctx));
-        int code = body.getInt("type");
-        switch(code)
-        {
-            case 1 -> handlePing(ctx);
-            case 2 -> ctx.future(handleApplicationCommand(body));
-            case 3 -> handleComponentInteraction(ctx);
-            case 4 -> handleAutocompleteInteraction(ctx);
-            default -> log.debug("Received unhandled interaction type {}", code);
+
+        int type = body.getInt("type");
+
+        if (type == 1)
+            return DataObject.empty().put("type", 1).toString(); // Pong
+        InteractionEvent event;
+        switch (InteractionType.fromKey(type)) {
+            case APPLICATION_COMMAND -> event = new ApplicationCommandEvent(interact, body);
+            case MESSAGE_COMPONENT -> {
+                int componentType = body.getObject("data").getInt("component_type");
+                if (componentType == 2)
+                    event = new ButtonClickEvent(interact, body);
+                else if (componentType == 3)
+                    event = new SelectionMenuEvent(interact, body);
+                else
+                    event = new GenericComponentInteractionEvent(interact, body);
+            }
+            case AUTOCOMPLETE -> event = new ApplicationCommandAutocompleteEvent(interact, body);
+            default -> event = new GenericInteractionEvent(interact, body);
         }
-    }
-
-    public void handlePing(Context ctx)
-    {
-        log.debug("Received PING interaction");
-        ctx.json(DataObject.empty().put("type", 1));
-    }
-
-    public CompletableFuture<String> handleApplicationCommand(DataObject payload)
-    {
-        InteractionCreateEvent event = new InteractionCreateEvent(interact, payload);
         interact.handleEvent(event);
-        return event.getResponse();
-    }
+        while (event.getResponse() == null)
+        {
+            if (System.currentTimeMillis() > startTime + 3000)
+                break;
+            Thread.sleep(20);
+        }
 
-    public void handleComponentInteraction(Context ctx)
-    {
+        if (event.getResponse() == null)
+        {
+            response.status(408);
+            return DataObject.empty().put("code", 408).put("message", "Request timed out").toString();
+        }
 
-    }
-
-    public void handleAutocompleteInteraction(Context ctx)
-    {
-
+        return event.getResponse().toString();
     }
 
     private boolean verify(String body, String signature, String timestamp)

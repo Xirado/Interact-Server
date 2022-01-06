@@ -15,10 +15,13 @@ sourceCompatibility = 16
 compileJava.options.encoding = "UTF-8"
 
 dependencies {
-    implementation group: 'io.javalin', name: 'javalin', version: '4.2.0'
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.31'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.1'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.1'
+    implementation group: 'com.sparkjava', name: 'spark-core', version: '2.9.3'
+    implementation group: 'org.jetbrains', name: 'annotations', version: '23.0.0'
+
+
     jar {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         from {

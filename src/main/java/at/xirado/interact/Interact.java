@@ -21,11 +21,6 @@ public class Interact
     private final List<EventListener> registeredListeners;
     private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    public static void main(String[] args)
-    {
-        System.out.println("You cannot run this directly!");
-    }
-
     private Interact(String publicKey, String host, int port, List<EventListener> listeners)
     {
         this.publicKey = publicKey;
@@ -33,6 +28,7 @@ public class Interact
         this.port = port;
         this.registeredListeners = listeners;
         webServer = new WebServer(this, host, port);
+
     }
 
     public void handleEvent(Event event)
