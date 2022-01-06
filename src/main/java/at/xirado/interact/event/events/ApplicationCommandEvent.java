@@ -15,6 +15,7 @@ public class ApplicationCommandEvent extends InteractionEvent
         DataObject object = DataObject.empty()
                 .put("type", 4)
                 .put("data", DataObject.empty().put("content", message));
+        System.out.println("Calling reply");
         respond(object);
     }
 }
