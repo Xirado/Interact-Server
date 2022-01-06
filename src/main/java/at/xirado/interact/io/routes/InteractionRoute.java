@@ -78,14 +78,14 @@ public class InteractionRoute implements Route
         }
         interact.handleEvent(event);
         System.out.println("Handling...");
-        while (event.getResponse() == null)
+        while (!event.hasResult())
         {
             if (System.currentTimeMillis() > startTime + 3000)
                 break;
             Thread.sleep(20);
         }
 
-        if (event.getResponse() == null)
+        if (!event.hasResult())
         {
             System.out.println("Got no response in time!");
             response.status(408);

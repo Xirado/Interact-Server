@@ -27,6 +27,11 @@ public class InteractionEvent extends Event
         this.response = response;
     }
 
+    public synchronized boolean hasResult()
+    {
+        return response != null;
+    }
+
     public synchronized DataObject getResponse()
     {
         return response;
