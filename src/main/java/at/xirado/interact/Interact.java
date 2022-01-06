@@ -37,7 +37,15 @@ public class Interact
 
     public void handleEvent(Event event)
     {
-        executor.submit(() -> registeredListeners.forEach(x -> x.onEvent(event)));
+        executor.submit(() -> registeredListeners.forEach(x -> {
+            try
+            {
+                x.onEvent(event);
+            } catch (Exception ex)
+            {
+                log.error("An uncaught exception was encountered!", ex);
+            }
+        }));
     }
 
     public ExecutorService getExecutor()
