@@ -21,8 +21,7 @@ public class InteractionEvent extends Event
 
     protected synchronized void respond(DataObject response)
     {
-        System.out.println("Responding!");
-        if (response != null)
+        if (this.response != null)
             throw new IllegalStateException("You already replied to this interaction!");
         this.response = response;
     }
