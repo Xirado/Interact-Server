@@ -36,6 +36,11 @@ public class InteractionEvent extends Event
         return response;
     }
 
+    public DataObject getInteraction()
+    {
+        return interaction;
+    }
+
     @Override
     public @NotNull Interact getInteract()
     {
