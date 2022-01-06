@@ -19,7 +19,7 @@ public class InteractionEvent extends Event
         this.interaction = interaction;
     }
 
-    protected void respond(DataObject response)
+    protected synchronized void respond(DataObject response)
     {
         System.out.println("Responding!");
         if (response != null)
@@ -27,7 +27,7 @@ public class InteractionEvent extends Event
         this.response = response;
     }
 
-    public DataObject getResponse()
+    public synchronized DataObject getResponse()
     {
         return response;
     }
