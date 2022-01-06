@@ -30,6 +30,7 @@ public class InteractionRoute implements Route
     @Override
     public Object handle(Request request, Response response) throws Exception
     {
+        System.out.println("Received interaction!");
         long startTime = System.currentTimeMillis();
         String signature = request.headers("X-Signature-Ed25519");
         String timestamp = request.headers("X-Signature-Timestamp");
@@ -76,6 +77,7 @@ public class InteractionRoute implements Route
             default -> event = new GenericInteractionEvent(interact, body);
         }
         interact.handleEvent(event);
+        System.out.println("Handling...");
         while (event.getResponse() == null)
         {
             if (System.currentTimeMillis() > startTime + 3000)
@@ -85,10 +87,11 @@ public class InteractionRoute implements Route
 
         if (event.getResponse() == null)
         {
+            System.out.println("Got no response in time!");
             response.status(408);
             return DataObject.empty().put("code", 408).put("message", "Request timed out").toString();
         }
-
+        System.out.println("Got response! "+ event.getResponse().toString());
         return event.getResponse().toString();
     }
 
