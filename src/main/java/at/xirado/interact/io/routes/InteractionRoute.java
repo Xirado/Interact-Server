@@ -52,6 +52,7 @@ public class InteractionRoute implements Route
         }
 
         DataObject body = DataObject.fromJson(bodyString);
+        log.trace("[INTERACTION CREATE] Received interaction: "+ body);
 
         if (body.isNull("type"))
         {
@@ -59,29 +60,32 @@ public class InteractionRoute implements Route
                     .put("code", 400)
                     .put("message", "Bad Request");
             response.status(400);
+            log.trace("[INTERACTION CREATE] Payload missing \"type\" field! Returning 400.");
             return result.toString();
         }
 
         int type = body.getInt("type");
 
         if (type == 1)
+        {
+            log.debug("[INTERACTION CREATE] Received ping.");
             return DataObject.empty().put("type", 1).toString(); // Pong
+        }
 
         boolean isFromGuild = !body.isNull("guild_id");
         JDAImpl jda = (JDAImpl) interact.getJDA();
         if (isFromGuild)
         {
-            Guild guild = interact.getJDA().getGuildById(body.getLong("guild_id"));
+            Guild guild = Util.getGuild(jda, body.getLong("guild_id"));
             if (guild == null)
             {
-                log.warn("Received interaction from a guild that JDA hasn't loaded yet!");
+                log.warn("[INTERACTION CREATE] Received interaction from a guild that JDA has not yet loaded!");
                 response.status(404);
                 return DataObject.empty().put("code", 404).put("message", "This guild is not loaded yet").toString();
             }
         }
 
         InteractionEvent event;
-        System.out.println("Received interaction of type "+InteractionType.fromKey(type));
         switch (InteractionType.fromKey(type)) {
             case SLASH_COMMAND -> event = new ApplicationCommandEvent(interact, new CommandInteractionImpl(jda, body));
             case COMPONENT -> {
@@ -97,7 +101,8 @@ public class InteractionRoute implements Route
             default -> event = new GenericInteractionEvent(interact, new InteractionImpl(jda, body));
         }
         interact.handleEvent(event);
-        System.out.println("Waiting...");
+
+        log.trace("[INTERACTION CREATE] Waiting on acknowledgement...");
         while (!event.hasResult())
         {
             if (System.currentTimeMillis() > startTime + 3000)
@@ -107,11 +112,11 @@ public class InteractionRoute implements Route
 
         if (!event.hasResult())
         {
-            System.out.println("No result! Sending timeout");
+            log.warn("[INTERACTION CREATE] Did not acknowledge in time! Returning 408.");
             response.status(408);
             return DataObject.empty().put("code", 408).put("message", "Request timed out").toString();
         }
-        System.out.println("Sending response: "+event.getResponse());
+        log.trace("[INTERACTION CREATE] Response payload: " + event.getResponse());
         return event.getResponse().toString();
     }
 
